@@ -1,2 +1,2 @@
-# modlr-gpu
+# modlr
 Modular Mojo GPU Puzzles 🧩
