@@ -1,0 +1,11 @@
+[workspace]
+authors = ["firqaaa <firqaaa@gmail.com>"]
+channels = ["https://conda.modular.com/max-nightly", "conda-forge"]
+name = "p11"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+modular = "25.4.*"
