@@ -1,7 +1,7 @@
 [workspace]
 authors = ["kaakkkaaaa <kakaswitch2@gmail.com>"]
 channels = ["https://conda.modular.com/max-nightly", "conda-forge"]
-name = "p11"
+name = "p13"
 platforms = ["osx-arm64"]
 version = "0.1.0"
 

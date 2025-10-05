@@ -1,11 +1,11 @@
 [workspace]
-authors = ["firqaaa <firqaaa@gmail.com>"]
+authors = ["kaakkkaaaa <kakaswitch2@gmail.com>"]
 channels = ["https://conda.modular.com/max-nightly", "conda-forge"]
 name = "p06"
-platforms = ["linux-64"]
+platforms = ["osx-arm64"]
 version = "0.1.0"
 
 [tasks]
 
 [dependencies]
-modular = "25.4.*"
+mojo = ">=0.25.7.0.dev2025100505,<0.26"
