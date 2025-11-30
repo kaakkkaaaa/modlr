@@ -23,11 +23,10 @@ The puzzle-based methodology offers several advantages:
 
 ```
 .
-├── problems/     # My puzzle implementations
-│   ├── p01/     # Puzzle 1 solution
-│   ├── p02/     # Puzzle 2 solution
-│   └── ...
-└── solutions/   # Reference solutions (optional)
+├── problems/    # My puzzle implementations
+    ├── p01/     # Puzzle 1 solution
+    ├── p02/     # Puzzle 2 solution
+    └── ...
 ```
 
 ## Progress Tracker
