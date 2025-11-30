@@ -1,4 +1,4 @@
-# Mojo🔥 GPU Puzzles 🧩 - Solutions + Bonus 📦
+# Mojo🔥 GPU Puzzles 🧩 + Bonus 📦
 
 My personal solutions to [Mojo GPU Puzzles](https://puzzles.modular.com/), a hands-on guide to GPU programming using Mojo🔥.
 
