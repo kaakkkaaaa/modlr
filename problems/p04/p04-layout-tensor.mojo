@@ -4,16 +4,16 @@ from layout import Layout, LayoutTensor
 from testing import assert_equal
 
 # ANCHOR: add_10_2d
-alias SIZE = 2;
-alias BLOCKS_PER_GRID = 1;
-alias THREADS_PER_BLOCK = (3, 3);
-alias dtype = DType.float32;
-alias layout = Layout.row_major(SIZE, SIZE);
+comptime SIZE = 2;
+comptime BLOCKS_PER_GRID = 1;
+comptime THREADS_PER_BLOCK = (3, 3);
+comptime dtype = DType.float32;
+comptime layout = Layout.row_major(SIZE, SIZE);
 
 fn add_10_2d(
-    output: LayoutTensor[mut=True, dtype, layout],
-    a: LayoutTensor[mut=True, dtype, layout],
-    size: Int
+    output: LayoutTensor[dtype, layout, MutAnyOrigin],
+    a: LayoutTensor[dtype, layout, MutAnyOrigin],
+    size: UInt
 ):
     row = thread_idx.y;
     col = thread_idx.x;
@@ -25,26 +25,29 @@ fn add_10_2d(
 
 fn main() raises:
     with DeviceContext() as ctx:
-        out_buf = ctx.enqueue_create_buffer[dtype](SIZE * SIZE).enqueue_fill(0);
-        out_tensor = LayoutTensor[mut=True, dtype, layout](out_buf.unsafe_ptr());
+        out_buf = ctx.enqueue_create_buffer[dtype](SIZE * SIZE);
+        out_buf.enqueue_fill(0);
+        out_tensor = LayoutTensor[dtype, layout, MutAnyOrigin](out_buf);
         print("out shape:", out_tensor.shape[0](), "x", out_tensor.shape[1]());
 
         expected = ctx.enqueue_create_host_buffer[dtype](
             SIZE * SIZE
-        ).enqueue_fill(0);
+        );
+        expected.enqueue_fill(0);
 
-        a = ctx.enqueue_create_buffer[dtype](SIZE * SIZE).enqueue_fill(0);
+        a = ctx.enqueue_create_buffer[dtype](SIZE * SIZE);
+        a.enqueue_fill(0);
         with a.map_to_host() as a_host:
             for i in range(SIZE * SIZE):
                 a_host[i] = i;
                 expected[i] = a_host[i] + 10.0;
         
-        a_tensor = LayoutTensor[mut=True, dtype, layout](a.unsafe_ptr());
+        a_tensor = LayoutTensor[dtype, layout, MutAnyOrigin](a);
 
-        ctx.enqueue_function[add_10_2d](
+        ctx.enqueue_function_checked[add_10_2d, add_10_2d](
             out_tensor,
             a_tensor,
-            SIZE,
+            UInt(SIZE),
             grid_dim=BLOCKS_PER_GRID,
             block_dim=THREADS_PER_BLOCK,
         );
