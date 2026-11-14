@@ -6,9 +6,11 @@ This workbook uses `mdBook` and the Mojo nightly build. Nightly gives you access
 
 This chapter gets your development environment ready. You’ll check that your system supports Mojo, install the nightly build, add editor support, and verify that everything works. It also covers updating or removing Mojo when you need to.
 
-![Mojo prepares to install itself.](install-light.png)
-
-![Mojo prepares to install itself.](install-dark.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="install-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="install-light.png">
+  <img alt="Mojo prepares to install itself." src="install-light.png">
+</picture>
 
 ## System requirements
 
