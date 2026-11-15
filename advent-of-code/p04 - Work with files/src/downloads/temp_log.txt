@@ -1,0 +1,10 @@
+  Day 1: -20.5C, Partly Cloudy  
+Day 2: -22.3C, Snow
+   Day 3: -19.8C, Clear
+Day 4: -25.1C, Partly Cloudy
+Day 5: -44.5C, BLIZZARD
+Day 6: -27.7C,   Foggy
+Day 7: -42.3C, partly cloudy
+Day 8: -28.2C, Clear
+  Day 9: -23.0C, Snow
+Day 10: -36.5C, Partly Cloudy
