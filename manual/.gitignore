@@ -1,0 +1,31 @@
+# pixi environment (the lock file IS committed)
+.pixi/
+
+# build outputs
+build/
+*.mojoc
+*.so
+*.dylib
+*.o
+*.a
+*.out
+*.exe
+a.out
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# compiler traces and debug artifacts
+*.trace.json*
+kgen.trace.*
+*.dSYM/
+
+# playground
+scratch/
+
+# editor / OS
+.DS_Store
+.idea/
+.vscode/
