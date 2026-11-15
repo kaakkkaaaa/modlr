@@ -32,4 +32,12 @@ def main() raises:
 
     # Check your work
     var expected = [i for i in range(1, len(lines) + 1)];
-    print(t"complete, in order: {day_numbers == expected}");  # True
+    print(t"complete, in order: {day_numbers == expected}");  # True if they match
+
+    # Push it: a reading with a decimal
+    print(t"scanned: {extract_ints(String(lines[0]))}");
+
+    var entry = lines[0].strip();
+    var temp_field = entry.split(": ")[1].split(", ")[0];
+    var reading = Float64(temp_field.removesuffix("F"));
+    print(t"reading: {reading}");
