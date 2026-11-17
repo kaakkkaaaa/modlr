@@ -1,5 +1,11 @@
 from std.collections import Set
 
+def find_index(items: List[Int], target: Int) -> Optional[Int]:
+    for i in range(len(items)):
+        if items[i] == target:
+            return i;
+    return None;
+
 def main() raises:
     # ----- Dict -----
     var capitals: Dict[String, String] = {
@@ -56,3 +62,8 @@ def main() raises:
     print("cat: ", counts.get("cat", 0));
     print("and: ", counts.get("and", 0));
     print("hat: ", counts.get("hat", 0));
+
+    var items: List[Int] = [10, 20, 30, 40];
+    print(find_index(items, 30).or_else(-1));    # 2
+    print(find_index(items, 99).or_else(-1));    # -1
+
