@@ -1,0 +1,15 @@
+Station 3, Day 0, 06:00, -22.3C, Clear
+Station 1, Day 0, 00:00, -20.5C, Partly Cloudy
+Station 3, Day 0, 18:00, -21.7C, Snow
+Station 5, Day 0, 12:00, -30.1C, BLIZZARD
+Station 1, Day 0, 12:00, -21.0C, Cloudy
+Station 3, Day 1, 12:00, -18.5C, Sunny
+Station 1, Day 2, 00:00, -22.3C, Snow
+Station 5, Day 1, 00:00, -28.4C, Foggy
+Station 1, Day 2, 12:00, -23.1C, Snow
+Station 5, Day 1, 18:00, -29.0C, Foggy
+Station 5, Day 2, 00:00, -31.5C, BLIZZARD
+Station 3, Day 2, 06:00, -18.2C, Clear
+Station 5, Day 2, 06:00, -32.0C, BLIZZARD
+Station 5, Day 2, 18:00, -41.7C, BLIZZARD
+Station 1, Day 2, 18:00, -24.0C, Cloudy
