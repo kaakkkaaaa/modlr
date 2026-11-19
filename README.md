@@ -1,236 +1,163 @@
-# Mojo🔥 GPU Puzzles 🧩 + Bonus 📦
+# modlr
 
-My personal solutions to [Mojo GPU Puzzles](https://puzzles.modular.com/), a hands-on guide to GPU programming using Mojo🔥.
+My notes, exercises, and solutions while learning the [Mojo](https://mojolang.org/) programming language, split into three independent tracks.
 
-## About Mojo GPU Puzzles
-
-Mojo GPU Puzzles is a practical, puzzle-based learning resource for mastering GPU programming with Mojo. The approach emphasizes learning through doing rather than extensive theory, with each puzzle building progressively on established concepts.
-
-### Why This Matters
-
-GPU programming has evolved from specialized skill to fundamental infrastructure for modern computing. From large language models to real-time computer vision, GPU acceleration drives computational breakthroughs across AI, scientific computing, autonomous systems, and financial analysis.
-
-### Learning Through Puzzles
-
-The puzzle-based methodology offers several advantages:
-- **Direct experience**: Immediate execution on GPU hardware with concrete feedback
-- **Incremental complexity**: Each challenge builds on previous concepts
-- **Applied focus**: Problems mirror real-world computational scenarios
-- **Diagnostic skills**: Systematic debugging practice
-- **Knowledge retention**: Active problem-solving over passive consumption
-
-## Repository Structure
+| Track | Source | Mojo | Status |
+|---|---|---|---|
+| [problems/](#problems--gpu-puzzles) | [Mojo GPU Puzzles](https://puzzles.modular.com/) | 0.25.7 (nightly) | p01–p14 written, p15 not started |
+| [advent-of-code/](#advent-of-code--advent-of-mojo) | [Advent of Mojo](https://advent.mojolang.org/) | 1.2.x | Chapters 1–8 |
+| [manual/](#manual--mojo-manual-notes) | [Mojo manual](https://mojolang.org/docs/manual/) | 1.2.0 | Part 1 mostly done (steps 1.1–1.11) |
 
 ```
 .
-├── problems/    # My puzzle implementations
-    ├── p01/     # Puzzle 1 solution
-    ├── p02/     # Puzzle 2 solution
-    └── ...
+├── problems/         # one Pixi env per puzzle
+├── advent-of-code/   # one shared Pixi env
+└── manual/           # one shared Pixi env
 ```
 
-## Progress Tracker
+## Before you start
 
-### Part I: GPU Fundamentals (Puzzles 1-8)
-- [ ] Puzzle 1 - Map
-- [ ] Puzzle 2 - Zip
-- [ ] Puzzle 3 - Guard
-- [ ] Puzzle 4 - Map 2D
-- [ ] Puzzle 5 - Broadcast
-- [ ] Puzzle 6 - Blocks
-- [ ] Puzzle 7 - Shared Memory
-- [ ] Puzzle 8 - Stencil
+- **Install [Pixi](https://pixi.sh/).** Every track manages Mojo through Pixi. There is no environment at the repository root, and the tracks do not share a Mojo version, so always `cd` into a track (or puzzle) folder first.
+- **Apple Silicon only.** Every `pixi.toml` targets `osx-arm64`. On another platform, add your platform to `platforms` and run `pixi install` to regenerate the lock file.
 
-**Learning objectives**: Thread indexing, block organization, memory access patterns, LayoutTensor abstractions, shared memory basics
+## problems/: GPU puzzles
 
-### Part II: Debugging GPU Programs (Puzzles 9-10)
-- [ ] Puzzle 9 - GPU Debugger
-- [ ] Puzzle 10 - Sanitizer
+Solutions to [Mojo GPU Puzzles](https://puzzles.modular.com/). The sequence starts with one thread writing one output element, then adds bounds checks, 2D indexing, blocks, shared memory, and full kernels: pooling, dot product, convolution, prefix sum, and matrix multiplication.
 
-**Learning objectives**: GPU debugging techniques, sanitizers for memory errors and race conditions, systematic bug identification
+Each `problems/pXX/` directory is its own Pixi project (`pixi.toml` and `pixi.lock`) on the [MAX nightly channel](https://conda.modular.com/max-nightly). A kernel file is a GPU function plus a `main` that allocates device buffers with `DeviceContext`, launches the kernel, and checks the result with `assert_equal`. From p04 onward, most puzzles keep a raw-pointer version and a `LayoutTensor` version side by side.
 
-*Note: Requires `pixi` and NVIDIA GPU with CUDA support*
+### Version
 
-### Part III: GPU Algorithms (Puzzles 11-16)
-- [ ] Puzzle 11 - Reduction
-- [ ] Puzzle 12 - Scan
-- [ ] Puzzle 13 - Pool
-- [ ] Puzzle 14 - Conv
-- [ ] Puzzle 15 - Matmul
-- [ ] Puzzle 16 - Flashdot
+> [!NOTE]
+> This track still targets **Mojo 0.25.7**. It will be updated to **Mojo 1.2.0**, the same version already used by `manual/` and `advent-of-code/`.
 
-**Learning objectives**: Parallel reductions, pooling operations, convolution kernels, prefix sum algorithms, matrix multiplication with tiling
+The kernels were written against nightly builds from before the 1.2 release. Two pins are in the tree today:
 
-### Part IV: MAX Graph Integration (Puzzles 17-19)
-- [ ] Puzzle 17 - Custom Op
-- [ ] Puzzle 18 - Softmax
-- [ ] Puzzle 19 - Attention
+| Folders | `pixi.toml` constraint | What that means |
+|---|---|---|
+| p01–p07 | `mojo = "0.25.7.*"` | Any 0.25.7 release on the nightly channel |
+| p08–p15 | `mojo = ">=0.25.7.0.dev2025100505,<0.26"` | The older nightly these folders were first locked to |
 
-**Learning objectives**: Custom MAX Graph operations, GPU kernel integration with Python, production-ready operations
+The 1.2.0 update will do three things:
 
-### Part V: PyTorch Integration (Puzzles 20-22)
-- [ ] Puzzle 20 - Torch Bridge
-- [ ] Puzzle 21 - Autograd
-- [ ] Puzzle 22 - Fusion
+1. Point every puzzle at the stable MAX channel and pin `mojo = "1.2.*"`, matching `manual/pixi.toml`.
+2. Bring the remaining 0.25.7 GPU API in line with 1.2. Later puzzles still use `alias` for compile-time values, `UnsafePointer` without an origin, and `enqueue_function`. Earlier puzzles have already moved toward `comptime`, `MutAnyOrigin`, and `enqueue_function_checked`.
+3. Re-lock each `pixi.lock` on `osx-arm64` after the code compiles and the existing `assert_equal` checks pass.
 
-**Learning objectives**: Bridging Mojo GPU kernels with PyTorch tensors, CustomOpLibrary usage, torch.compile integration, kernel fusion
+Until that lands, install and run a puzzle with the Pixi environment inside its own folder. The 1.2 environments under `manual/` and `advent-of-code/` are a different compiler, so leave them for those tracks.
 
-### Part VI: Functional Patterns & Benchmarking (Puzzle 23)
-- [ ] Puzzle 23 - Functional
+### Run
 
-**Learning objectives**: Functional patterns (elementwise, tiled processing, vectorization), systematic performance optimization, benchmarking skills
-
-### Part VII: Warp-Level Programming (Puzzles 24-26)
-- [ ] Puzzle 24 - Warp Sum
-- [ ] Puzzle 25 - Warp Communication
-- [ ] Puzzle 26 - Advanced Warp
-
-**Learning objectives**: Warp fundamentals and SIMT execution, warp operations (sum, shuffle, broadcast), advanced shuffle patterns
-
-### Part VIII: Block-Level Programming (Puzzle 27)
-- [ ] Puzzle 27 - Block Operations
-
-**Learning objectives**: Block-wide reductions, block-level prefix sum, intra-block coordination
-
-### Part IX: Advanced Memory Systems (Puzzles 28-29)
-- [ ] Puzzle 28 - Async Memory
-- [ ] Puzzle 29 - Barriers
-
-**Learning objectives**: Memory coalescing patterns, async memory operations, memory fences, synchronization primitives, prefetching strategies
-
-### Part X: Performance Analysis & Optimization (Puzzles 30-32)
-- [ ] Puzzle 30 - Profiling
-- [ ] Puzzle 31 - Occupancy
-- [ ] Puzzle 32 - Bank Conflicts
-
-**Learning objectives**: GPU kernel profiling, bottleneck identification, occupancy optimization, shared memory bank conflict elimination
-
-*Note: Requires NVIDIA GPU with NSight profiling tools*
-
-### Part XI: Advanced GPU Features (Puzzles 33-34)
-- [ ] Puzzle 33 - Tensor Cores
-- [ ] Puzzle 34 - Cluster
-
-**Learning objectives**: Tensor core programming for AI workloads, cluster programming in modern GPUs
-
-*Note: Requires NVIDIA GPU with Tensor Core support*
-
-## Setup Instructions
-
-### Prerequisites
-
-**System Requirements**:
-- Compatible GPU ([check requirements](https://docs.modular.com/max/faq#gpu-requirements))
-- For macOS Apple Silicon: macOS 15.0+, Xcode 16+ (currently supports puzzles 1-8, 11-15)
-
-**Knowledge Requirements**:
-- Programming fundamentals (variables, loops, conditionals, functions)
-- Parallel computing concepts (threads, synchronization, race conditions)
-- Basic Mojo familiarity ([Mojo manual](https://docs.modular.com/mojo/manual/))
-
-### Installation
-
-1. **Clone the repository**:
-```bash
-git clone https://github.com/modular/mojo-gpu-puzzles
-cd mojo-gpu-puzzles
-```
-
-2. **Install package manager**:
-
-**Option 1 (Recommended): pixi**
-```bash
-# Install
-curl -fsSL https://pixi.sh/install.sh | sh
-
-# Update
-pixi self-update
-```
-
-**Option 2: uv**
-```bash
-# Install
-curl -fsSL https://astral.sh/uv/install.sh | sh
-
-# Update
-uv self update
-
-# Create virtual environment
-uv venv && source .venv/bin/activate
-```
-
-*Note: Some puzzles require `pixi` for full functionality*
-
-3. **Verify setup**:
-```bash
-# Check GPU specifications
-pixi run gpu-specs
-
-# Run first puzzle
-pixi run p01
-```
-
-For AMD GPUs: `pixi run p01 -e amd`  
-For Apple GPUs: `pixi run p01 -e apple`
-
-## Working with Puzzles
-
-### Workflow
-
-1. Navigate to `problems/pXX/` to find the puzzle template
-2. Implement your solution in the provided framework
-3. Test your implementation: `pixi run pXX`
-4. Compare with reference solutions to learn different approaches
-
-### Essential Commands
+`pixi install` is once per puzzle. After that, `pixi run mojo` uses the Mojo binary from that folder's lock file.
 
 ```bash
-# Run puzzles (NVIDIA by default)
-pixi run pXX              # NVIDIA GPU
-pixi run pXX -e amd       # AMD GPU
-pixi run pXX -e apple     # Apple GPU
-
-# Test solutions
-pixi run tests            # Test all solutions
-pixi run tests pXX        # Test specific puzzle
-
-# Run manually
-pixi run mojo problems/pXX/pXX.mojo   # Your implementation
-pixi run mojo solutions/pXX/pXX.mojo  # Reference solution
-
-# Interactive shell
-pixi shell                # Enter environment
-mojo problems/p01/p01.mojo
-exit
-
-# Development
-pixi run format           # Format code
-pixi task list            # Available commands
+cd problems/p01
+pixi install
+pixi run mojo p01.mojo
 ```
 
-## GPU Platform Support
+For a puzzle with several programs, pass the file you want. From `problems/p14`:
 
-| Platform | Supported Puzzles | Notes |
-|----------|------------------|-------|
-| **NVIDIA GPU** | All (1-34) | Complete support, best learning experience |
-| **AMD GPU** | 1-8, 11-29 | Missing debugging/profiling tools, Tensor Cores |
-| **Apple GPU** | 1-8, 11-15 | Basic GPU programming patterns only |
+```bash
+pixi run mojo p14-tiled-matmul.mojo
+```
 
-### Platform-Specific Features
+### Puzzles
 
-**NVIDIA GPUs**: Full curriculum access including debugging tools (9-10), profiling (30-32), and modern GPU features (33-34)
+| Puzzle | Topic | Files |
+|---|---|---|
+| [p01](problems/p01/) | Map: add 10 on one thread per element | `p01.mojo` |
+| [p02](problems/p02/) | Zip: add two vectors | `p02.mojo` |
+| [p03](problems/p03/) | Guard: skip threads past the array length | `p03.mojo` |
+| [p04](problems/p04/) | 2D map, then the same kernel with `LayoutTensor` | `p04.mojo`, `p04-layout-tensor*.mojo` |
+| [p05](problems/p05/) | Broadcast add | `p05.mojo`, `p05-layout-tensor.mojo` |
+| [p06](problems/p06/) | One block grid | `p06.mojo` |
+| [p07](problems/p07/) | 2D block grid | `p07.mojo`, `p07-layout-tensor.mojo` |
+| [p08](problems/p08/) | Shared memory | `p08.mojo`, `p08-layout-tensor.mojo` |
+| [p09](problems/p09/) | Pooling, including a 2D kernel | `p09.mojo`, `p09-layout-tensor.mojo`, `p09-pooling-2d-pt*.mojo` |
+| [p10](problems/p10/) | Dot product | `p10.mojo`, `p10-layout-tensor.mojo` |
+| [p11](problems/p11/) | 1D and 2D convolution, including block boundaries | `p11.mojo`, `p11-conv*.mojo`, `p11-block-boundary.mojo` |
+| [p12](problems/p12/) | Prefix sum: local phase and across block boundaries | `p12.mojo`, `p12-block-boundary.mojo` |
+| [p13](problems/p13/) | Axis sums: basic, shared memory, and warp-level | `p13-axis-*.mojo` |
+| [p14](problems/p14/) | Matmul: naive, tiled, coalesced, register-tiled, SIMD | `p14.mojo`, `p14-*-matmul*.mojo` |
+| [p15](problems/p15/) | Not started (`p15.mojo` is empty) | `p15.mojo` |
 
-**AMD GPUs**: Comprehensive learning for algorithms and memory patterns, missing only vendor-specific tools
+Several kernels still have the original `# FILL ME IN` comment sitting above a filled-in body. The comment marks the line the puzzle asked for. The code under it is the current attempt, and `main` checks that attempt with `assert_equal`.
 
-**Apple GPUs**: Suitable for fundamental GPU programming concepts
+## advent-of-code/: Advent of Mojo
+
+Guided notes for [Advent of Mojo](https://advent.mojolang.org/), a short course that goes from installing Mojo to reading a sensor log and answering questions about it. One shared environment covers every chapter: `advent-of-code/pixi.toml` with `mojo = ">=1.2.0,<2"` on the stable MAX channel. Each chapter README is the walkthrough: the idea, the code, and the expected output. Sample inputs live in that chapter's `src/downloads/`.
+
+| Chapter | Program | What it covers |
+|---|---|---|
+| [p01 - Cover](<advent-of-code/p01 - Cover/>) | Cover art only | Light and dark cover images |
+| [p02 - Welcome to Advent Mojo](<advent-of-code/p02 - Welcome to Advent Mojo/>) | Install notes | System requirements, Pixi, and the Modular channels |
+| [p03 - Mojo basics](<advent-of-code/p03 - Mojo basics/>) | `analyzer.mojo` | Functions, lists, averages, and raising on an empty list |
+| [p04 - Work with files](<advent-of-code/p04 - Work with files/>) | `temp_log.mojo` | Read a log, write a report, append a line, then delete the report |
+| [p05 - Work with strings](<advent-of-code/p05 - Work with strings/>) | `string_tour.mojo` | Length, slices, search, trim, reverse, and `split` |
+| [p06 - Parse text into typed data](<advent-of-code/p06 - Parse text into typed data/>) | `parse_text.mojo` | Split lines into fields and parse temperatures as `Float64` |
+| [p07 - Pull numbers from text](<advent-of-code/p07 - Pull numbers from text/>) | `pull_numbers_from_text.mojo` | Scan digit runs, keep the day numbers, parse one signed decimal |
+| [p08 - Count and look up values](<advent-of-code/p08 - Count and look up values/>) | `count_and_look_up_values.mojo` | Count with `Dict`, test membership with `Set`, key by `(station, day)` |
+
+Install the shared environment once from `advent-of-code`. Chapters p04–p08 open `src/downloads/` relative to the current directory, so run each of those programs from its own chapter folder:
+
+```bash
+cd advent-of-code
+pixi install
+
+cd "p08 - Count and look up values"
+pixi run --manifest-path ../pixi.toml mojo count_and_look_up_values.mojo
+```
+
+p08 downloads `station_reports.txt` into `src/downloads/` on its first run, so it needs network access.
+
+## manual/: Mojo manual notes
+
+Study notes for the Mojo **1.2.0** manual, one file per step. The environment (`manual/pixi.toml`) pins `mojo = "1.2.*"` and adds Python 3.12 and NumPy for Part 8, where Mojo calls Python. [manual/README.md](manual/README.md) is the progress table for all eight parts. Each part folder has its own README with the step checklist, goals, and checkpoint questions.
+
+Part 1 is the only part with programs so far: `s01_hello.mojo` through `s11_match.mojo`. Those files are small programs you can run, covering `main`, `var` and `comptime`, numbers, SIMD, strings, tuples, `Array` and `List`, `Dict`, `Set`, `Optional`, operators, loops, and `match`. Steps 1.12–1.14 (functions, raising, and a closing exercise) are still unwritten. Parts 2–8 are checklists waiting for the same treatment: structs and traits, ownership, lifecycle, metaprogramming, pointers, advanced functions, and Python/C interop.
+
+```bash
+cd manual
+pixi install
+pixi run version                                              # prints the Mojo version
+pixi run mojo run p01_basics/s01_hello.mojo                   # run a file
+pixi run mojo build p01_basics/s01_hello.mojo -o build/hello  # build a binary
+```
+
+| Part | Topic | Status |
+|---|---|---|
+| [p01_basics](manual/p01_basics/) | Language basics | `s01`–`s11` written. Steps 1.12–1.14 to do |
+| [p02_structs_traits](manual/p02_structs_traits/) | Structs, traits, errors, packages | Checklist only |
+| [p03_ownership](manual/p03_ownership/) | Value ownership | Checklist only |
+| [p04_lifecycle](manual/p04_lifecycle/) | Value lifecycle | Checklist only |
+| [p05_metaprogramming](manual/p05_metaprogramming/) | Metaprogramming | Checklist only |
+| [p06_pointers](manual/p06_pointers/) | Pointers | Checklist only |
+| [p07_functions](manual/p07_functions/) | Advanced functions | Checklist only |
+| [p08_interop](manual/p08_interop/) | Python and C interop | Checklist only |
+
+<details>
+<summary>Part 1 files</summary>
+
+| File | Step |
+|---|---|
+| `s01_hello.mojo` | Hello world and program structure |
+| `s02_variables.mojo` | Variables, static types, and scope |
+| `s03_numbers.mojo` | Numeric types and conversions |
+| `s04_simd.mojo` | SIMD and `DType` |
+| `s05_strings.mojo` | Strings, indexing, and t-strings |
+| `s06_bools_tuples.mojo` | Booleans, truthiness, and tuples |
+| `s07_array_list.mojo` | `Array` and `List` |
+| `s08_dict_set_optional.mojo` | `Dict`, `Set`, and `Optional` |
+| `s09_operators.mojo` | Operators |
+| `s10_control_flow.mojo` | `if`, `while`, and `for` |
+| `s11_match.mojo` | `match`, `if case`, and `while case` |
+
+</details>
 
 ## Resources
 
-- [Official Mojo GPU Puzzles](https://puzzles.modular.com/)
-- [Mojo Documentation](https://docs.modular.com/mojo/manual/)
-- [GPU Programming Fundamentals](https://docs.modular.com/mojo/manual/gpu/fundamentals)
-- [Original GPU Puzzles (Python)](https://github.com/srush/GPU-Puzzles) - Inspiration for this project
-
-## Acknowledgments
-
-Parts I and III are heavily inspired by [GPU Puzzles](https://github.com/srush/GPU-Puzzles), an interactive NVIDIA GPU learning project. This adaptation reimplements concepts using Mojo's abstractions and expands on advanced topics with Mojo-specific optimizations.
+- [Mojo GPU Puzzles](https://puzzles.modular.com/)
+- [Advent of Mojo](https://advent.mojolang.org/)
+- [Mojo manual](https://mojolang.org/docs/manual/)
+- [GPU programming fundamentals](https://docs.modular.com/mojo/manual/gpu/fundamentals)
