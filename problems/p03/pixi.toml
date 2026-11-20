@@ -1,6 +1,6 @@
 [workspace]
 authors = ["kaakkkaaaa <kakaswitch2@gmail.com>"]
-channels = ["https://conda.modular.com/max-nightly", "conda-forge"]
+channels = ["https://conda.modular.com/max", "conda-forge"]
 name = "p03"
 platforms = ["osx-arm64"]
 version = "0.1.0"
@@ -8,4 +8,5 @@ version = "0.1.0"
 [tasks]
 
 [dependencies]
-mojo = "0.25.7.*"
+mojo = "1.2.*"
+max = "26.7.*"
