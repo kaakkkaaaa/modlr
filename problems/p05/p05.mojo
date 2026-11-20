@@ -30,7 +30,7 @@ def broadcast_add[
     var col = thread_idx.x;
     # FILL ME IN (roughly 2 lines)
     if row < size and col < size:
-        output[row, col] = a[col] + b[row];
+        output[row, col] = a[0, col] + b[row, 0];
 
 
 # ANCHOR_END: broadcast_add
