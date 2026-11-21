@@ -4,7 +4,9 @@
   <img src="https://miro.medium.com/0*wS9xIg1uRHIbP4OP.jpeg" alt="Modular, the next-generation AI developer platform" width="690">
 </p>
 
-My notes, exercises, and solutions while learning the [Mojo](https://mojolang.org/) programming language, split into four independent tracks.
+Speed is the hard part of modern AI software. Python is comfortable to write, and C++ or CUDA is what people reach for when a loop or a kernel has to keep up with the hardware. [Mojo](https://mojolang.org/), from [Modular](https://www.modular.com/), is built to cover both. Its syntax stays close to Python, and the compiler adds static types, SIMD, control over memory, and GPU kernels in the same source file.
+
+Mojo is worth learning because a program can grow from a short example into a kernel that [MAX](https://docs.modular.com/max/) serves, written in one language throughout. This repository is a hands-on introduction, divided into four independent tracks.
 
 | Track | Source | Mojo | Status |
 |---|---|---|---|
