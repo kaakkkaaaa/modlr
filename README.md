@@ -1,6 +1,8 @@
 # modlr
 
-![Modular, the next-generation AI developer platform](https://miro.medium.com/0*wS9xIg1uRHIbP4OP.jpeg)
+<p align="center">
+  <img src="https://miro.medium.com/0*wS9xIg1uRHIbP4OP.jpeg" alt="Modular, the next-generation AI developer platform" width="690">
+</p>
 
 My notes, exercises, and solutions while learning the [Mojo](https://mojolang.org/) programming language, split into four independent tracks.
 
