@@ -42,10 +42,6 @@ File names are suggestions. Keep them as valid identifiers (letters, digits, `_`
 
 <!-- What clicked, what confused me, links. One subsection per step works well. -->
 
-## Gotchas I hit
-
-<!-- What I wrote, the error, the fix. -->
-
 ## Checkpoint
 
 Answer in your own words before opening the answers in the guide.
