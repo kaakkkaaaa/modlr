@@ -1,51 +1,57 @@
-from memory import UnsafePointer
-from gpu import thread_idx, block_idx, block_dim
-from gpu.host import DeviceContext
-from testing import assert_equal
+from std.memory import Pointer
+from max.gpu import thread_idx, block_idx, block_dim
+from max.gpu.host import DeviceContext
+from std.testing import assert_equal
 
 # ANCHOR: add_10_blocks
-alias SIZE = 9;
-alias BLOCKS_PER_GRID = (3, 1);
-alias THREADS_PER_BLOCK = (4, 1);
-alias dtype = DType.float32;
+comptime SIZE = 9;
+comptime BLOCKS_PER_GRID = (3, 1);
+comptime THREADS_PER_BLOCK = (4, 1);
+comptime dtype = DType.float32;
 
-fn add_10_blocks(
-    output: UnsafePointer[Scalar[dtype]],
-    a: UnsafePointer[Scalar[dtype]],
-    size: Int,
+def add_10_blocks(
+    output: Pointer[Scalar[dtype], MutAnyOrigin],
+    a: Pointer[Scalar[dtype], MutAnyOrigin],
+    size_dev: Int32,
 ):
-    i = block_dim.x * block_idx.x + thread_idx.x;
+    var size = Int(size_dev);
+    var i = block_dim.x * block_idx.x + thread_idx.x;
     # FILL ME IN (roughly 2 lines)
     if i < size:
-        output[i] = a[i] + 10.0;
+        output[unsafe_offset=i] = a[unsafe_offset=i] + 10.0;
 
 # ANCHOR_END: add_10_blocks
 
-fn main() raises:
+def main() raises:
     with DeviceContext() as ctx:
-        out = ctx.enqueue_create_buffer[dtype](SIZE).enqueue_fill(0);
-        a = ctx.enqueue_create_buffer[dtype](SIZE).enqueue_fill(0);
+        var out = ctx.enqueue_create_buffer[dtype](SIZE);
+        out.enqueue_fill(0);
+        var a = ctx.enqueue_create_buffer[dtype](SIZE);
+        a.enqueue_fill(0);
         with a.map_to_host() as a_host:
             for i in range(SIZE):
-                a_host[i] = i;
+                a_host[i] = Scalar[dtype](i);
         
         ctx.enqueue_function[add_10_blocks](
-            out.unsafe_ptr(),
-            a.unsafe_ptr(),
-            SIZE,
+            out,
+            a,
+            Int32(SIZE),
             grid_dim=BLOCKS_PER_GRID,
             block_dim=THREADS_PER_BLOCK,
         );
 
-        expected = ctx.enqueue_create_host_buffer[dtype](SIZE).enqueue_fill(0);
+        var expected = ctx.enqueue_create_host_buffer[dtype](SIZE);
+        expected.enqueue_fill(0);
 
         ctx.synchronize();
 
         for i in range(SIZE):
-            expected[i] = i + 10;
+            expected[i] = Scalar[dtype](i + 10);
         
         with out.map_to_host() as out_host:
             print("out:", out_host);
             print("expected:", expected);
             for i in range(SIZE):
                 assert_equal(out_host[i], expected[i]);
+        
+        print("Puzzle 06 complete ✅");
