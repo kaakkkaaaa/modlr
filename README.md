@@ -10,7 +10,7 @@ Mojo is worth learning because a program can grow from a short example into a ke
 
 | Track | Source | Mojo | Status |
 |---|---|---|---|
-| [problems/](#gpu-puzzles) | [Mojo GPU Puzzles](https://puzzles.modular.com/) | 1.2.0 for p01–p06; 0.25.7 nightly for p07–p15 | p01–p05 kernels on 1.2.0. p15 not started |
+| [problems/](#gpu-puzzles) | [Mojo GPU Puzzles](https://puzzles.modular.com/) | 1.2.0 | p01–p14 written, p15 not started |
 | [advent-of-code/](#advent-of-mojo) | [Advent of Mojo](https://advent.mojolang.org/) | 1.2.0 | Chapters 1–8 |
 | [manual/](#mojo-manual-guides) | [Mojo manual](https://mojolang.org/docs/manual/) | 1.2.0 | Part 1 through step 1.12 |
 | [blog/](#blog) | Posts updated for Mojo 1.2.0 | 1.2.0 | SIMD matrix multiply, parallel axis sums |
@@ -25,8 +25,40 @@ Mojo is worth learning because a program can grow from a short example into a ke
 
 ## Before you start
 
-- **Install [Pixi](https://pixi.sh/).** `problems/`, `advent-of-code/`, and `manual/` each manage Mojo through Pixi. There is no environment at the repository root, and those tracks do not share a Mojo version, so always `cd` into a track (or puzzle) folder first. `blog/` is the exception: those programs use the Mojo 1.2.0 compiler already on your `PATH`.
-- **Apple Silicon only.** Every `pixi.toml` targets `osx-arm64`. On another platform, add your platform to `platforms` and run `pixi install` to regenerate the lock file.
+Mojo is installed per folder, through [Pixi](https://pixi.sh/). There is no environment at the repository root. `problems/`, `advent-of-code/`, and `manual/` each download **Mojo 1.2.0** from the [stable MAX channel](https://conda.modular.com/max) the first time you run `pixi install` in that folder. Every track in this repository is meant to be run on that version.
+
+### Install
+
+1. Install Pixi, then open a new terminal so `pixi` is on your `PATH`.
+
+   ```bash
+   curl -fsSL https://pixi.sh/install.sh | sh
+   ```
+
+2. Install one track and check the compiler. `manual/` is the smallest folder to start with.
+
+   ```bash
+   cd manual
+   pixi install
+   pixi run mojo --version
+   ```
+
+   The last command should print `Mojo 1.2.0`. `pixi install` is once per folder. After that, `pixi run mojo` uses the binary from that folder's lock file. Repeat it inside `advent-of-code/`, or inside a single `problems/pXX/` directory, when you move to that track. The tracks do not share an environment, so always `cd` into the folder you are about to run.
+
+Each GPU puzzle also installs MAX (`max = "26.7.*"`). A plain `mojo` binary does not include `max.gpu`, so run those kernels with that puzzle's own `pixi run mojo`.
+
+`blog/` has no Pixi project. From `manual/`, `pixi shell` puts this same Mojo 1.2.0 on your `PATH`, which is what the blog programs expect:
+
+```bash
+cd manual
+pixi shell
+mojo --version
+```
+
+### Requirements
+
+- **Apple Silicon.** Every `pixi.toml` lists `osx-arm64`. Mojo on macOS wants macOS Sequoia (15) or later and the Xcode Command Line Tools. On Linux, add your platform to `platforms` and run `pixi install` again so Pixi rewrites the lock file.
+- **Editor support.** The [Mojo extension for VS Code](https://marketplace.visualstudio.com/items?itemName=modular-mojotools.vscode-mojo) adds syntax highlighting and completion. The publisher is Modular.
 
 ## GPU Puzzles
 
@@ -36,32 +68,15 @@ Each `problems/pXX/` directory is its own Pixi project (`pixi.toml` and `pixi.lo
 
 ### Version
 
-> [!NOTE]
-> p01–p06 target **Mojo 1.2.0**. p07–p15 still target **Mojo 0.25.7** and will be updated to 1.2.0, the same version already used by `manual/`, `advent-of-code/`, and `blog/`.
+Every puzzle runs on **Mojo 1.2.0**, the same compiler as `manual/`, `advent-of-code/`, and `blog/`. Each `pixi.toml` points at the [stable MAX channel](https://conda.modular.com/max) and pins both packages:
 
-The first six puzzles have moved off the nightly channel. Their `pixi.toml` files point at the [stable MAX channel](https://conda.modular.com/max) and pin both the compiler and the GPU package. `mojo` by itself does not ship `max.gpu`, so a 1.2.0 environment without `max` cannot compile these kernels.
+| Channel | `pixi.toml` | What that means |
+|---|---|---|
+| [stable MAX](https://conda.modular.com/max) | `mojo = "1.2.*"`, `max = "26.7.*"` | The lock resolves to Mojo 1.2.0 and MAX 26.7.0 |
 
-| Folders | Channel | `pixi.toml` | What that means |
-|---|---|---|---|
-| p01–p06 | [stable MAX](https://conda.modular.com/max) | `mojo = "1.2.*"`, `max = "26.7.*"` | The lock resolves to Mojo 1.2.0 and MAX 26.7.0 |
-| p07–p15 | [MAX nightly](https://conda.modular.com/max-nightly) | `mojo = ">=0.25.7.0.dev2025100505,<0.26"` | The older nightly these folders were first locked to |
+`mojo` by itself does not ship `max.gpu`, so a 1.2.0 environment without `max` cannot compile these kernels. Install and run each puzzle from its own folder.
 
-What already landed in p01–p05:
-
-1. The environment above, with a fresh `pixi.lock` for `osx-arm64`.
-2. The 1.2.0 GPU API. Imports come from `max.gpu` and `max.gpu.host`. Kernels are `def`, compile-time values are `comptime`, and device pointers are `Pointer[..., MutAnyOrigin]` indexed with `unsafe_offset`. Launches use `enqueue_function`, and scalar sizes passed into a kernel are `Int32`.
-3. `TileTensor` in place of the old `LayoutTensor` files. p04 keeps a pointer kernel (`p04.mojo`) next to `p04-tile-tensor-intro.mojo` and `p04-tile-tensor.mojo`. p05 is only the broadcast kernel, and it indexes the operands as `a[0, col] + b[row, 0]`.
-4. A run of each of those files with `pixi run mojo`. The existing `assert_equal` checks passed.
-
-`p06.mojo` is the exception inside that group. Its Pixi environment is already Mojo 1.2.0, but the kernel is still the 0.25.7 version: `alias`, `fn`, `UnsafePointer`, and `from gpu import ...`. It will not compile in the 1.2.0 environment until it is ported the same way as p01–p05.
-
-The rest of the update, for p07–p15, will do three things:
-
-1. Point each folder at the stable MAX channel and pin `mojo = "1.2.*"` and `max = "26.7.*"`.
-2. Bring the kernels in line with 1.2.0. Those files still use `alias`, `fn`, `UnsafePointer` without an origin, and, where a puzzle has a second version, `LayoutTensor`.
-3. Re-lock each `pixi.lock` on `osx-arm64` after the code compiles and the existing `assert_equal` checks pass.
-
-Until that lands, install and run a puzzle with the Pixi environment inside its own folder. A p01 environment will not compile a p08 kernel, and the other way around.
+The 1.2.0 kernels import from `max.gpu` and `max.gpu.host`. They use `def`, `comptime`, and `Pointer[..., MutAnyOrigin]` indexed with `unsafe_offset`. Launches use `enqueue_function`, and scalar sizes passed into a kernel are `Int32`. p04 keeps a pointer kernel (`p04.mojo`) next to `p04-tile-tensor-intro.mojo` and `p04-tile-tensor.mojo`. p05 is the broadcast kernel, and it indexes the operands as `a[0, col] + b[row, 0]`.
 
 ### Run
 
@@ -88,7 +103,7 @@ pixi run mojo p14-tiled-matmul.mojo
 | [p03](problems/p03/) | Guard: skip threads past the array length | `p03.mojo` |
 | [p04](problems/p04/) | 2D map. Pointer kernel, then the same add with `TileTensor` | `p04.mojo`, `p04-tile-tensor-intro.mojo`, `p04-tile-tensor.mojo` |
 | [p05](problems/p05/) | Broadcast add. One `TileTensor` kernel, row vector plus column vector | `p05.mojo` |
-| [p06](problems/p06/) | One block grid. Environment is 1.2.0; the kernel is still 0.25.7 | `p06.mojo` |
+| [p06](problems/p06/) | One block grid | `p06.mojo` |
 | [p07](problems/p07/) | 2D block grid | `p07.mojo`, `p07-layout-tensor.mojo` |
 | [p08](problems/p08/) | Shared memory | `p08.mojo`, `p08-layout-tensor.mojo` |
 | [p09](problems/p09/) | Pooling, including a 2D kernel | `p09.mojo`, `p09-layout-tensor.mojo`, `p09-pooling-2d-pt*.mojo` |
