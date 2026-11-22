@@ -19,24 +19,24 @@ Guide: [Part 1](https://claude.ai/artifact/76skpa3yrc1XGsrGXB4qf5#part-1)
 
 ## Steps
 
-| Done | Step | Topic | My file |
-|:---:|---|---|---|
-| [ ] | 1.1 | Hello world and program structure | `s01_hello_world_program.mojo` |
-| [ ] | 1.2 | Variables, static types, and scope | `s02_variables_static_types.mojo` |
-| [ ] | 1.3 | Numeric types and conversions | `s03_numeric_types_conversions.mojo` |
-| [ ] | 1.4 | SIMD and DType: what numbers really are | `s04_simd_dtype_numbers.mojo` |
-| [ ] | 1.5 | Strings: UTF-8, indexing, and t-strings | `s05_strings_utf_8.mojo` |
-| [ ] | 1.6 | Booleans, truthiness, and tuples | `s06_booleans_truthiness_tuples.mojo` |
-| [ ] | 1.7 | Array vs List | `s07_array_list.mojo` |
-| [ ] | 1.8 | Dict, Set, and Optional | `s08_dict_set_optional.mojo` |
-| [ ] | 1.9 | Operators | `s09_operators.mojo` |
-| [ ] | 1.10 | Control flow: if, while, for | `s10_control_flow_if.mojo` |
-| [ ] | 1.11 | Pattern matching: match, if case, while case | `s11_pattern_matching_match.mojo` |
-| [ ] | 1.12 | Functions and arguments | `s12_functions_arguments.mojo` |
-| [ ] | 1.13 | Raising and non-raising functions | `s13_raising_non_raising.mojo` |
-| [ ] | 1.14 | Putting it together, and Python habits to unlearn | `s14_putting_together_python.mojo` |
+All 14 steps are written. Run a file from `manual/` with `pixi run mojo run p01_basics/s01_hello.mojo`.
 
-File names are suggestions. Keep them as valid identifiers (letters, digits, `_`, no leading digit) so they stay importable.
+| Done | Step | Topic | File |
+|:---:|---|---|---|
+| [x] | 1.1 | Hello world and program structure | `s01_hello.mojo` |
+| [x] | 1.2 | Variables, static types, and scope | `s02_variables.mojo` |
+| [x] | 1.3 | Numeric types and conversions | `s03_numbers.mojo` |
+| [x] | 1.4 | SIMD and DType: what numbers really are | `s04_simd.mojo` |
+| [x] | 1.5 | Strings: UTF-8, indexing, and t-strings | `s05_strings.mojo` |
+| [x] | 1.6 | Booleans, truthiness, and tuples | `s06_bools_tuples.mojo` |
+| [x] | 1.7 | Array vs List | `s07_array_list.mojo` |
+| [x] | 1.8 | Dict, Set, and Optional | `s08_dict_set_optional.mojo` |
+| [x] | 1.9 | Operators | `s09_operators.mojo` |
+| [x] | 1.10 | Control flow: if, while, for | `s10_control_flow.mojo` |
+| [x] | 1.11 | Pattern matching: match, if case, while case | `s11_match.mojo` |
+| [x] | 1.12 | Functions and arguments | `s12_functions.mojo` |
+| [x] | 1.13 | Raising and non-raising functions | `s13_raises.mojo` |
+| [x] | 1.14 | Putting it together, and Python habits to unlearn | `s14_wrap_up.mojo` |
 
 ## Notes
 
