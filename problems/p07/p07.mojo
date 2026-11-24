@@ -87,6 +87,9 @@ def main() raises:
         );
         ctx.synchronize();
 
+        print("--------------------------------");
         check(output_tile, "TileTensor");
+        print("--------------------------------");
         check(output_raw, "Raw Memory");
+        print("--------------------------------");
         print("Puzzle 07 complete ✅");
