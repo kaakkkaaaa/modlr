@@ -5,8 +5,41 @@ name = "p02"
 platforms = ["osx-arm64"]
 version = "0.1.0"
 
-[tasks]
-
 [dependencies]
 mojo = "1.2.*"
 max = "26.7.*"
+python = "3.12.*"            # needed by google-colab-cli
+
+[pypi-dependencies]
+google-colab-cli = ">=0.8"   # provides the `colab` command
+
+[tasks]
+# Run locally on the Mac's GPU:   pixi run local p02.mojo
+local = { cmd = "mojo run {{ file }}", args = [{ arg = "file", default = "p02.mojo" }] }
+
+# Check what's running on Colab / how many compute units are left
+colab-status = "colab sessions && colab usage"
+
+# Shut the Colab machine down when finished (otherwise it keeps using quota)
+colab-down = "colab stop -s mojo"
+
+# --- Colab GPU workflow ---------------------------------------------------
+# 1. Start a Colab GPU machine and install the same Mojo/MAX as locally
+#    pixi run colab-up            (T4)
+#    pixi run colab-up L4         (paid GPUs: L4, A100, H100, G4)
+[tasks.colab-up]
+args = [{ arg = "gpu", default = "T4" }]
+cmd = """
+colab new --gpu {{ gpu }} -s mojo &&
+echo '!pip install -q mojo==1.2.0 max==26.7.0' | colab exec -s mojo
+"""
+
+# 2. Upload a .mojo file and run it there
+#    pixi run colab-run           (p02.mojo)
+#    pixi run colab-run other.mojo
+[tasks.colab-run]
+args = [{ arg = "file", default = "p02.mojo" }]
+cmd = """
+colab upload -s mojo {{ file }} /content/{{ file }} &&
+echo '!mojo run /content/{{ file }}' | colab exec -s mojo
+"""
