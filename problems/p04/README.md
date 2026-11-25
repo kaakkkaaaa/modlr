@@ -13,7 +13,7 @@ There are two new ideas. Threads are now arranged in two dimensions, so each one
 | **Launch** | `grid_dim = 1` block, `block_dim = (3, 3)` threads |
 | **Threads launched** | 9 (4 do work, 5 idle) |
 | **New ideas** | `thread_idx.y`, 2D guard, row-major offsets, `TileTensor`, `row_major` layout |
-| **Files** | `p04.mojo`, `p04-tile-tensor-intro.mojo`, `p04-tile-tensor.mojo` |
+| **Files** | `p04.mojo`, `p04-tile-tensor.mojo` |
 
 ## 2D threads
 
@@ -122,26 +122,9 @@ comptime LayoutType = type_of(layout)
 var a_tensor = TileTensor(a, layout)        # wrap an existing DeviceBuffer
 ```
 
-`row_major[SIZE, SIZE]()` is the layout. It knows the shape and computes `row * SIZE + col` itself, so `a_tensor[row, col]` reaches the right element without you writing the formula. The layout is a `comptime` value, which means its shape is part of the tensor's **type**.
+`row_major[SIZE, SIZE]()` is the layout. It knows the shape and computes `row * SIZE + col` itself, so `a_tensor[row, col]` reaches the right element without you writing the formula. The layout is a `comptime` value, which means its shape is part of the tensor's **type**. The tensor wraps device memory, so the host checks the underlying buffer after `synchronize()` rather than printing the tensor from `main`.
 
-### Warm-up: `p04-tile-tensor-intro.mojo`
-
-This small program exists to show the type before the real puzzle uses it. It wraps a 2×3 buffer of zeros, launches **one** thread (`grid_dim=1, block_dim=1`), and inside the kernel prints the tensor, adds 1 to `[0, 0]`, and prints it again:
-
-```mojo
-def kernel(tensor: TileTensor[mut=True, dtype, LayoutType, MutAnyOrigin]):
-    print("Before:")
-    print(tensor)
-    tensor[0, 0] += 1
-    print("After:")
-    print(tensor)
-```
-
-The tensor wraps device memory, so the host cannot print it directly. That is why the print happens inside a kernel. A tensor prints as nested rows, which makes the 2D shape visible. This program does not call `assert_equal`.
-
-It also uses `var ctx = DeviceContext()` instead of `with DeviceContext() as ctx:`. Both work. The `with` form is what the other programs use.
-
-### The puzzle: `p04-tile-tensor.mojo`
+### `p04-tile-tensor.mojo`
 
 ```mojo
 def add_10_2d(
@@ -186,16 +169,6 @@ expected: HostBuffer([10.0, 11.0, 12.0, 13.0])
 Puzzle 04 complete ✅
 ```
 
-`p04-tile-tensor-intro.mojo`:
-
-```
-Running on: Apple M3 Pro (metal, device 0)
-Before:
-[[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
-After:
-[[1.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
-```
-
 `p04-tile-tensor.mojo`:
 
 ```
@@ -217,8 +190,7 @@ Puzzle 04 complete ✅
 
 1. In `p04.mojo`, change the guard to `if row < size:` and run it. Look at which element is wrong, and work out which thread overwrote it.
 2. Change `SIZE` to 3. The 3×3 block now fits exactly and no thread is idle. Then try `SIZE = 4`: the block is too small, and the last row and column stay 0.
-3. In `p04-tile-tensor-intro.mojo`, change `tensor[0, 0] += 1` to `tensor[1, 2] += 1` and predict where the 1 appears before you run it.
-4. Change the intro layout to `row_major[3, 2]()` (with `HEIGHT = 3, WIDTH = 2`) and watch the printed shape change while the buffer size stays 6.
+3. In `p04-tile-tensor.mojo`, change the layout to `row_major[SIZE, SIZE]()` with `SIZE = 3` and keep the `(3, 3)` block. Every thread now has an element. Then set `SIZE = 4` and watch the last row and column stay 0.
 
 ## Key takeaways
 
@@ -235,7 +207,6 @@ This folder is its own Pixi project. It pins Mojo 1.2.0 and MAX 26.7.0 on the st
 cd problems/p04
 pixi install
 pixi run mojo p04.mojo
-pixi run mojo p04-tile-tensor-intro.mojo
 pixi run mojo p04-tile-tensor.mojo
 ```
 
@@ -248,7 +219,6 @@ The project also has tasks that run the puzzle on a Google Colab GPU, using the 
 ```bash
 pixi run colab-up            # start a T4 GPU machine, install Mojo 1.2.0 + MAX 26.7.0 on it
 pixi run colab-run           # upload p04.mojo and run it there
-pixi run colab-run p04-tile-tensor-intro.mojo
 pixi run colab-run p04-tile-tensor.mojo
 pixi run colab-status        # running machines and compute units left
 pixi run colab-down          # stop the machine when you're done
