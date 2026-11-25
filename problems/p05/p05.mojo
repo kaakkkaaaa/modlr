@@ -36,6 +36,7 @@ def broadcast_add[
 # ANCHOR_END: broadcast_add
 def main() raises:
     with DeviceContext() as ctx:
+        print(t"Running on: {ctx.name()} ({ctx.api()}, device {ctx.id()})");
         var out = ctx.enqueue_create_buffer[dtype](SIZE * SIZE);
         out.enqueue_fill(0);
         var out_tensor = TileTensor(out, out_layout);

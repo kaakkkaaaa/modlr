@@ -141,11 +141,17 @@ Both launches go on the same `DeviceContext`, so they run in the order they were
 
 ## Expected output
 
+The first line names the device the kernel ran on: `metal` means the Apple GPU, `cuda` means an NVIDIA GPU (for example on Colab), and `cpu` would mean it ran on the CPU. The device name will differ on other machines.
+
 ```
+Running on: Apple M3 Pro (metal, device 0)
+--------------------------------
 TileTensor : HostBuffer([10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0, 26.0, 27.0, 28.0, 29.0, 30.0, 31.0, 32.0, 33.0, 34.0])
 ✅ TileTensor passed
+--------------------------------
 Raw Memory : HostBuffer([10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0, 26.0, 27.0, 28.0, 29.0, 30.0, 31.0, 32.0, 33.0, 34.0])
 ✅ Raw Memory passed
+--------------------------------
 Puzzle 07 complete ✅
 ```
 
@@ -182,6 +188,23 @@ pixi run mojo p07.mojo
 
 `pixi install` is once.
 
+### Run on a Colab GPU
+
+The project also has tasks that run the puzzle on a Google Colab GPU, using the [Google Colab CLI](https://developers.googleblog.com/en/introducing-the-google-colab-cli/) that `pixi install` sets up. Every puzzle folder uses the same Colab machine, named `mojo`, so you start it once and then run any puzzle on it.
+
+```bash
+pixi run colab-up            # start a T4 GPU machine, install Mojo 1.2.0 + MAX 26.7.0 on it
+pixi run colab-run           # upload p07.mojo and run it there
+pixi run colab-status        # running machines and compute units left
+pixi run colab-down          # stop the machine when you're done
+```
+
+- The first `colab` command asks you to sign in to Google. On the consent screen, tick every permission. If only your name and email are granted, the CLI stops with a "Scope has changed" error.
+- `pixi run colab-up L4` picks another GPU. L4, A100, H100 and G4 need a paid Colab plan.
+- Run `colab-up` once. A second run while the machine is up tries to create another machine with the same name. Check with `pixi run colab-status`.
+- `colab-down` matters: a running machine keeps using your Colab quota.
+- On Colab, the first output line names an NVIDIA GPU with `cuda` instead of `metal`, which confirms the puzzle ran there.
+
 ---
 
-Previous: [Puzzle 06: Blocks](../p06/README.md)
+Previous: [Puzzle 06: Blocks](../p06/README.md) · Next: [Puzzle 08: Shared memory](../p08/README.md)

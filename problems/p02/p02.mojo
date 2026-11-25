@@ -22,6 +22,7 @@ def add(
 
 def main() raises:
     with DeviceContext() as ctx:
+        print(t"Running on: {ctx.name()} ({ctx.api()}, device {ctx.id()})");
         var out = ctx.enqueue_create_buffer[dtype](SIZE);
         out.enqueue_fill(0);
         var a = ctx.enqueue_create_buffer[dtype](SIZE);

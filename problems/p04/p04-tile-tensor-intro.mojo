@@ -31,6 +31,7 @@ def kernel(
 
 def main() raises:
     var ctx = DeviceContext();
+    print(t"Running on: {ctx.name()} ({ctx.api()}, device {ctx.id()})");
     var a = ctx.enqueue_create_buffer[dtype](HEIGHT * WIDTH);
     a.enqueue_fill(0);
     var tensor = TileTensor(a, layout);

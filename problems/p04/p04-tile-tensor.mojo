@@ -28,6 +28,7 @@ def add_10_2d(
 
 def main() raises:
     with DeviceContext() as ctx:
+        print(t"Running on: {ctx.name()} ({ctx.api()}, device {ctx.id()})");
         var out_buf = ctx.enqueue_create_buffer[dtype](SIZE * SIZE);
         out_buf.enqueue_fill(0);
         var out_tensor = TileTensor(out_buf, layout);

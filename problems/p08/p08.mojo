@@ -75,6 +75,7 @@ def check(buf: DeviceBuffer[dtype], name: String) raises:
 
 def main() raises:
     with DeviceContext() as ctx:
+        print(t"Running on: {ctx.name()} ({ctx.api()}, device {ctx.id()})");
         # Shared input: a[i] = i;
         var a = ctx.enqueue_create_buffer[dtype](SIZE);
         with a.map_to_host() as a_host:

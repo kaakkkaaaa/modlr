@@ -25,6 +25,7 @@ def add_10_2d(
 
 def main() raises:
     with DeviceContext() as ctx:
+        print(t"Running on: {ctx.name()} ({ctx.api()}, device {ctx.id()})");
         var out = ctx.enqueue_create_buffer[dtype](SIZE * SIZE);
         out.enqueue_fill(0);
         var expected = ctx.enqueue_create_host_buffer[dtype](SIZE * SIZE);
